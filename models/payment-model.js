@@ -39,19 +39,6 @@ const PaymentSchema = new mongoose.Schema({
   }
 })
 
-// sample Data object:
-// {
-//   "id": 1365,
-//   "contractId": 17689,
-//   "description": "Rent to be paid",
-//   "value": -100,
-//   "time": "2016-12-09T00:00:00.00Z",
-//   "isImported": false,
-//   "createdAt": "2016-12-09T12:57:09.708Z",
-//   "updatedAt": "2016-12-09T12:57:09.709Z",
-//   "isDeleted": false
-// }
-
 function findInputErrorsInPaymentUpdate (contractId, data) {
   let errors = []
   if (typeof contractId !== 'string') errors.push('Parameter "contractId" must be of type String')
@@ -68,7 +55,8 @@ PaymentSchema.statics.getPaymentsForContractBetween = function (contractId, star
     let errors = []
     if (typeof contractId !== 'string') errors.push('Parameter "contractId" must be of type String')
     if (!/\d/.test(startDate)) errors.push('Parameter "from" must be of type Number (timestamp in milliseconds)')
-    if (!/\d/.test(endDate)) errors.push('Parameter to "must" be of type Number (timestamp in milliseconds)')
+    if (!/\d/.test(endDate)) errors.push('Parameter "to" must be of type Number (timestamp in milliseconds)')
+    if (!startDate < endDate) errors.push('Parameter "from" must be smaller than "to" (timestamp in milliseconds)')
     return errors.length === 0 ? false : errors
   }
 
