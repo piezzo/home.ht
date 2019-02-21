@@ -1,0 +1,32 @@
+version: '2.1'
+services:
+  api:
+    environment:
+      - NODE_ENV=production
+      - RUNS_IN_DOCKER=true
+      - PORT=3000
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/home/app
+      - /home/app/node_modules
+    depends_on:
+      mongo:
+        condition: service_healthy
+    links:
+      - "mongo:mongo"
+    entrypoint: ["node", "./bin/www"]
+  mongo:
+    image: mongo
+    logging:
+      driver: "none"
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - ./mongodb/data:/data/db
+    healthcheck:
+      test: echo 'db.stats().ok' | mongo localhost:27017/admin --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 12
