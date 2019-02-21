@@ -7,7 +7,7 @@ const Payment = mongoose.model('Payment')
 
 // Fetch the list of payments above (which were made in a particular time frame)
 router.get('/contract/:contractId/payment/from/:startDate/to/:endDate', function (req, res, next) {
-  Payment.getPaymentsForContractBetween((err, doc) => {
+  Payment.getPaymentsForContractBetween(req.params.contractId, req.params.startDate, req.params.endDate, (err, doc) => {
     if (err) {
       res.send(500, err)
     } else {
@@ -45,6 +45,9 @@ router.delete('/contract/:contractId/payment/:paymentId', function (req, res, ne
   Payment.deletePayment(req.params.contractId, req.params.paymentId, (err, doc) => {
     if (err) {
       res.send(500, err)
+    } else if (doc.n === 0) {
+      console.log(`payment not found.`)
+      res.send(404, 'payment not found')
     } else {
       res.json(doc).end()
     }
